@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @unique @default(uuid())
+  name          String         @db.VarChar(50)
+  dob           DateTime
+  ActivityData  ActivityData?
+  NutritionData NutritionData?
+}
+
+// ACTIVITY
+
+model ActivityData {
+  id                Int                 @id @unique @default(autoincrement())
+  userId            String              @unique
+  User              User                @relation(fields: [userId], references: [id])
+  ActivityDataOfDay ActivityDataOfDay[]
+}
+
+model ActivityDataOfDay {
+  id                 Int                  @id @unique @default(autoincrement())
+  ActivityData       ActivityData         @relation(fields: [activityDataId], references: [id])
+  activityDataId     Int
+  date               DateTime
+  steps              Int                  @default(0)
+  ExcercisePerformed ExcercisePerformed[]
+}
+
+model Excercise {
+  id                 Int                  @id @unique @default(autoincrement())
+  name               String               @unique @db.VarChar(30)
+  ExcercisePerformed ExcercisePerformed[]
+}
+
+model ExcercisePerformed {
+  id                  Int               @id @unique @default(autoincrement())
+  rep                 Int               @default(0)
+  weight              Int               @default(0)
+  oneRepMax           Int               @default(0)
+  Excercise           Excercise         @relation(fields: [excerciseId], references: [id])
+  excerciseId         Int
+  ActivityDataOfDay   ActivityDataOfDay @relation(fields: [activityDataOfDayId], references: [id])
+  activityDataOfDayId Int
+}
+
+// NUTRITION
+
+model NutritionData {
+  id                 Int                  @id @unique @default(autoincrement())
+  userId             String               @unique
+  User               User                 @relation(fields: [userId], references: [id])
+  NutritionDataOfDay NutritionDataOfDay[]
+}
+
+model NutritionDataOfDay {
+  id              Int           @id @unique @default(autoincrement())
+  NutritionData   NutritionData @relation(fields: [nutritionDataId], references: [id])
+  nutritionDataId Int
+  date            DateTime
+  water           Int           @default(0)
+  calorie         Int           @default(0)
+}
+
+model MealTaken {
+  id        Int    @id @unique @default(autoincrement())
+  meal_name String @db.VarChar(300)
+  calorie   Int    @default(0)
+}
+
+// PROGRESS
+
+// model ProgressData {
+//   id                Int                 @id @unique @default(autoincrement())
+//   userId            String              @unique
+//   User              User                @relation(fields: [userId], references: [id])
+//   ProgressDataOfDay ProgressDataOfDay[]
+// }
+
+// model ProgressDataOfDay {
+//   id             Int          @id @unique @default(autoincrement())
+//   ProgressData   ProgressData @relation(fields: [progressDataId], references: [id])
+//   date           DateTime
+//   progressDataId Int
+// }
