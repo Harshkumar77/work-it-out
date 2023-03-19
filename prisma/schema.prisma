@@ -13,9 +13,14 @@ datasource db {
 model User {
   id            String         @id @unique @default(uuid())
   name          String         @db.VarChar(50)
-  dob           DateTime
+  dob           DateTime?
+  height        Int?
+  tutorialDone  Boolean        @default(false)
+  email         String         @unique @db.VarChar(50)
+  picture       String         @db.VarChar(200)
   ActivityData  ActivityData?
   NutritionData NutritionData?
+  WeightData    WeightData?
 }
 
 // ACTIVITY
@@ -23,13 +28,13 @@ model User {
 model ActivityData {
   id                Int                 @id @unique @default(autoincrement())
   userId            String              @unique
-  User              User                @relation(fields: [userId], references: [id])
+  User              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   ActivityDataOfDay ActivityDataOfDay[]
 }
 
 model ActivityDataOfDay {
   id                 Int                  @id @unique @default(autoincrement())
-  ActivityData       ActivityData         @relation(fields: [activityDataId], references: [id])
+  ActivityData       ActivityData         @relation(fields: [activityDataId], references: [id], onDelete: Cascade)
   activityDataId     Int
   date               DateTime
   steps              Int                  @default(0)
@@ -44,13 +49,20 @@ model Excercise {
 
 model ExcercisePerformed {
   id                  Int               @id @unique @default(autoincrement())
-  rep                 Int               @default(0)
-  weight              Int               @default(0)
-  oneRepMax           Int               @default(0)
-  Excercise           Excercise         @relation(fields: [excerciseId], references: [id])
+  Excercise           Excercise         @relation(fields: [excerciseId], references: [id], onDelete: Cascade)
   excerciseId         Int
-  ActivityDataOfDay   ActivityDataOfDay @relation(fields: [activityDataOfDayId], references: [id])
+  ActivityDataOfDay   ActivityDataOfDay @relation(fields: [activityDataOfDayId], references: [id], onDelete: Cascade)
   activityDataOfDayId Int
+  SetPerformed        SetPerformed[]
+}
+
+model SetPerformed {
+  id                   Int                @id @unique @default(autoincrement())
+  rep                  Int                @default(0)
+  weight               Decimal            @default(0)
+  oneRepMax            Decimal            @default(0)
+  ExcercisePerformed   ExcercisePerformed @relation(fields: [excercisePerformedId], references: [id], onDelete: Cascade)
+  excercisePerformedId Int
 }
 
 // NUTRITION
@@ -58,23 +70,43 @@ model ExcercisePerformed {
 model NutritionData {
   id                 Int                  @id @unique @default(autoincrement())
   userId             String               @unique
-  User               User                 @relation(fields: [userId], references: [id])
+  User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   NutritionDataOfDay NutritionDataOfDay[]
 }
 
 model NutritionDataOfDay {
   id              Int           @id @unique @default(autoincrement())
-  NutritionData   NutritionData @relation(fields: [nutritionDataId], references: [id])
+  NutritionData   NutritionData @relation(fields: [nutritionDataId], references: [id], onDelete: Cascade)
   nutritionDataId Int
   date            DateTime
   water           Int           @default(0)
   calorie         Int           @default(0)
+  MealTaken       MealTaken[]
 }
 
 model MealTaken {
-  id        Int    @id @unique @default(autoincrement())
-  meal_name String @db.VarChar(300)
-  calorie   Int    @default(0)
+  id                   Int                @id @unique @default(autoincrement())
+  meal_name            String             @db.VarChar(300)
+  calorie              Int                @default(0)
+  NutritionDataOfDay   NutritionDataOfDay @relation(fields: [nutritionDataOfDayId], references: [id], onDelete: Cascade)
+  nutritionDataOfDayId Int
+}
+
+// WEIGHT
+
+model WeightData {
+  id          Int           @id @unique @default(autoincrement())
+  userId      String        @unique
+  User        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  WeightOfDay WeightOfDay[]
+}
+
+model WeightOfDay {
+  id           Int        @id @unique @default(autoincrement())
+  WeightData   WeightData @relation(fields: [weightDataId], references: [id], onDelete: Cascade)
+  date         DateTime
+  Weight       Decimal
+  weightDataId Int
 }
 
 // PROGRESS
@@ -82,13 +114,13 @@ model MealTaken {
 // model ProgressData {
 //   id                Int                 @id @unique @default(autoincrement())
 //   userId            String              @unique
-//   User              User                @relation(fields: [userId], references: [id])
+//   User              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 //   ProgressDataOfDay ProgressDataOfDay[]
 // }
 
 // model ProgressDataOfDay {
 //   id             Int          @id @unique @default(autoincrement())
-//   ProgressData   ProgressData @relation(fields: [progressDataId], references: [id])
+//   ProgressData   ProgressData @relation(fields: [progressDataId], references: [id], onDelete: Cascade)
 //   date           DateTime
 //   progressDataId Int
 // }

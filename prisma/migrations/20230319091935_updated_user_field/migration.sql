@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "height" INTEGER,
+ADD COLUMN     "tutorialDone" BOOLEAN NOT NULL DEFAULT false,
+ALTER COLUMN "dob" DROP NOT NULL;
