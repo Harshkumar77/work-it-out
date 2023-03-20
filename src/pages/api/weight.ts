@@ -4,6 +4,7 @@ import prisma from "../../../lib/prisma"
 import getUserFromSession from "@/utils/getUserFromSession"
 import { dateFrom, zeroDate } from "@/utils/date"
 import { type } from "os"
+import { INTERNAL_SERVER_ERROR, INVALID_REQUEST } from "@/utils/response"
 
 const setWeightParser = z.object({
   time: z.coerce.date().transform(zeroDate),
@@ -91,9 +92,10 @@ export default async function handler(
           .status(500)
           .json({ message: "No weight data is initialized for this user" })
       return res.status(200).json(data[0].WeightOfDay)
-    } else return res.status(404).json({ message: "Invalid request" })
+    } else return INVALID_REQUEST(res)
   } catch (error) {
     if (error instanceof ZodError)
       return res.status(400).json({ error: error.issues })
+    return INTERNAL_SERVER_ERROR(res, error)
   }
 }
