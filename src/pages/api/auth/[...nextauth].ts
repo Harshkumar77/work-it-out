@@ -1,7 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { Profile } from "next-auth"
-import prisma from "../../../../lib/prisma"
+import prisma from "@/lib/prisma"
 
 export const authOptions: AuthOptions = {
   providers: [

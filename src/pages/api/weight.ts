@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse, NextApiHandler } from "next"
 import { ZodError, z } from "zod"
-import prisma from "../../../lib/prisma"
 import getUserFromSession from "@/utils/getUserFromSession"
 import { dateFrom, zeroDate } from "@/utils/date"
 import { type } from "os"
@@ -9,6 +8,7 @@ import {
   INVALID_REQUEST,
   ZOD_VALIDATION_ERROR,
 } from "@/utils/response"
+import prisma from "@/lib/prisma"
 
 const setWeightParser = z.object({
   time: z.coerce.date().transform(zeroDate),
