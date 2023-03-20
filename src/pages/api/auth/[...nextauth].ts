@@ -1,9 +1,9 @@
-import NextAuth from "next-auth"
+import NextAuth, { AuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { Profile } from "next-auth"
 import prisma from "../../../../lib/prisma"
 
-export default NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID ?? "",
@@ -46,4 +46,6 @@ export default NextAuth({
       return false
     },
   },
-})
+}
+
+export default NextAuth(authOptions)
