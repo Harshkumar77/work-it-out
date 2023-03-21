@@ -70,7 +70,7 @@ export default async function handler(
     } else if (req.method === "GET") {
       const body = getWeightParser.parse(req.body)
 
-      const data = await prisma.weightData.findMany({
+      const weightData = await prisma.weightData.findFirst({
         where: {
           userId: user.id,
         },
@@ -91,11 +91,11 @@ export default async function handler(
           },
         },
       })
-      if (data.length === 0)
+      if (!weightData)
         return res
           .status(500)
           .json({ message: "No weight data is initialized for this user" })
-      return res.status(200).json(data[0].WeightOfDay)
+      return res.status(200).json(weightData.WeightOfDay)
     } else return INVALID_REQUEST(res)
   } catch (error) {
     if (error instanceof ZodError) return ZOD_VALIDATION_ERROR(res, error)
