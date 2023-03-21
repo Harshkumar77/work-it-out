@@ -44,7 +44,10 @@ model ActivityDataOfDay {
 model Excercise {
   id                 Int                  @id @unique @default(autoincrement())
   name               String               @unique @db.VarChar(30)
+  img                String
   ExcercisePerformed ExcercisePerformed[]
+  Muscle             Muscle               @relation(fields: [muscleId], references: [id], onDelete: Cascade)
+  muscleId           Int
 }
 
 model ExcercisePerformed {
@@ -54,6 +57,12 @@ model ExcercisePerformed {
   ActivityDataOfDay   ActivityDataOfDay @relation(fields: [activityDataOfDayId], references: [id], onDelete: Cascade)
   activityDataOfDayId Int
   SetPerformed        SetPerformed[]
+}
+
+model Muscle {
+  id        Int         @id @unique @default(autoincrement())
+  name      String      @unique @db.VarChar(20)
+  Excercise Excercise[]
 }
 
 model SetPerformed {
